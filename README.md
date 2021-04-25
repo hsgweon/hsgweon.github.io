@@ -1,3 +1,3 @@
 ## Gweon Lab
 
-Official Homepage: [hsgweon.github.io](https://hsgweon.github.io.git)
+Official Homepage: [hsgweon.github.io](https://hsgweon.github.io/)
