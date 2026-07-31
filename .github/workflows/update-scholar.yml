@@ -1,0 +1,44 @@
+name: Sync Google Scholar
+
+# Refreshes src/data/publications.json from Google Scholar.
+# - Runs automatically on the 1st of every month.
+# - Can also be run on demand from the Actions tab ("Run workflow").
+# If the scrape works and something changed, it commits the update —
+# which triggers the Build & Deploy workflow and the site goes live.
+# If Scholar blocks the scrape, the job fails without changing anything
+# (the site keeps its existing publications). Just re-run it later.
+on:
+  schedule:
+    - cron: '0 6 1 * *' # 06:00 UTC, 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest publications from Scholar
+        run: node scripts/fetch-scholar.mjs
+
+      - name: Commit changes if any
+        run: |
+          git config user.name  "scholar-bot"
+          git config user.email "actions@github.com"
+          if git diff --quiet -- src/data/publications.json; then
+            echo "No changes — publications are already up to date."
+          else
+            git add src/data/publications.json
+            git commit -m "chore: auto-sync publications from Google Scholar"
+            git push
+            echo "Publications updated and pushed."
+          fi

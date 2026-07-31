@@ -1,0 +1,162 @@
+---
+import pubData from '../data/publications.json';
+
+const pubs = [...pubData.publications].sort(
+  (a, b) => b.year - a.year || b.citations - a.citations
+);
+const years = [...new Set(pubs.map((p) => p.year).filter(Boolean))].sort((a, b) => b - a);
+const maxCites = Math.max(...pubs.map((p) => p.citations));
+const total = pubs.length;
+const lastUpdated = pubData._meta.lastUpdated;
+
+// Build a Scholar search fallback link when a paper has no direct link
+const linkFor = (p) =>
+  p.link && p.link.length
+    ? p.link
+    : `https://scholar.google.com/scholar?q=${encodeURIComponent(p.title)}`;
+---
+
+<section class="section" id="publications">
+  <div class="container">
+    <p class="eyebrow" data-reveal>// publications</p>
+    <div class="pub-head" data-reveal>
+      <h2 class="section-title">Selected &amp; recent work</h2>
+      <a href={pubData._meta.source} target="_blank" rel="noopener" class="pub-sync" title="Auto-synced from Google Scholar">
+        <span class="sync-dot"></span>
+        <span>Auto-synced from Google Scholar · {lastUpdated}</span>
+      </a>
+    </div>
+
+    <!-- Controls -->
+    <div class="pub-controls" data-reveal data-delay="1">
+      <div class="search">
+        <span class="search-icon">⌕</span>
+        <input type="search" id="pubSearch" placeholder="Search titles, journals…" aria-label="Search publications" autocomplete="off" />
+      </div>
+      <div class="years" id="yearFilter">
+        <button class="year-btn active" data-year="all">All</button>
+        {years.map((y) => <button class="year-btn" data-year={y}>{y}</button>)}
+      </div>
+    </div>
+
+    <p class="pub-meta" id="pubCount">Showing {total} publications</p>
+
+    <ol class="pub-list" id="pubList">
+      {pubs.map((p) => (
+        <li
+          class="pub"
+          data-title={p.title.toLowerCase()}
+          data-venue={p.venue.toLowerCase()}
+          data-year={p.year}
+        >
+          <a class="pub-link" href={linkFor(p)} target="_blank" rel="noopener">
+            <span class="pub-year">{p.year}</span>
+            <span class="pub-body">
+              <span class="pub-title">{p.title}</span>
+              <span class="pub-venue">{p.venue}</span>
+            </span>
+            <span class={`pub-cites ${p.citations >= maxCites * 0.25 ? 'hot' : ''}`}>
+              <span class="cite-num">{p.citations.toLocaleString()}</span>
+              <span class="cite-label">cites</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <p class="pub-empty" id="pubEmpty" hidden>No publications match your search.</p>
+  </div>
+</section>
+
+<style>
+  .pub-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .pub-sync { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); display: inline-flex; align-items: center; gap: 8px; transition: color 0.2s ease; }
+  .pub-sync:hover { color: var(--accent-soft); }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #37d67a; box-shadow: 0 0 8px #37d67a; animation: pulse 2.4s infinite; }
+
+  .pub-controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 30px; }
+  .search { position: relative; flex: 1 1 240px; min-width: 200px; }
+  .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); font-size: 1.05rem; }
+  .search input {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--line-strong);
+    border-radius: 100px;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 12px 18px 12px 40px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(203,41,87,0.18); }
+  .search input::placeholder { color: var(--ink-faint); }
+
+  .years { display: flex; flex-wrap: wrap; gap: 7px; }
+  .year-btn {
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-dim);
+    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 100px;
+    padding: 8px 14px; cursor: pointer; transition: all 0.2s ease;
+  }
+  .year-btn:hover { color: #fff; border-color: var(--line-strong); }
+  .year-btn.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+  .pub-meta { font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faint); margin-top: 22px; }
+
+  .pub-list { list-style: none; margin-top: 8px; }
+  .pub { border-top: 1px solid var(--line); }
+  .pub:last-child { border-bottom: 1px solid var(--line); }
+  .pub-link { display: grid; grid-template-columns: 58px 1fr auto; gap: 18px; align-items: center; padding: 20px 6px; transition: background 0.25s ease, padding 0.25s ease; }
+  .pub-link:hover { background: linear-gradient(90deg, rgba(203,41,87,0.08), transparent); padding-left: 16px; }
+  .pub-year { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-soft); align-self: start; padding-top: 2px; }
+  .pub-title { display: block; font-family: var(--font-display); font-weight: 500; font-size: 1.02rem; color: var(--ink); line-height: 1.4; transition: color 0.2s ease; }
+  .pub-link:hover .pub-title { color: #fff; }
+  .pub-venue { display: block; font-size: 0.85rem; color: var(--ink-faint); font-style: italic; margin-top: 4px; }
+  .pub-cites { display: flex; flex-direction: column; align-items: center; min-width: 56px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 6px; }
+  .pub-cites.hot { border-color: rgba(203,41,87,0.5); background: rgba(203,41,87,0.08); }
+  .cite-num { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--ink); line-height: 1; }
+  .pub-cites.hot .cite-num { color: var(--accent-soft); }
+  .cite-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-top: 4px; }
+
+  .pub-empty { text-align: center; color: var(--ink-dim); font-family: var(--font-mono); padding: 40px 0; }
+
+  @media (max-width: 560px) {
+    .pub-link { grid-template-columns: 1fr auto; gap: 12px; }
+    .pub-year { grid-column: 1; grid-row: 1; font-size: 0.78rem; }
+    .pub-body { grid-column: 1 / -1; grid-row: 2; }
+    .pub-cites { grid-column: 2; grid-row: 1; }
+  }
+</style>
+
+<script>
+  const list = document.getElementById('pubList');
+  const items = [...list.querySelectorAll('.pub')];
+  const search = document.getElementById('pubSearch');
+  const yearFilter = document.getElementById('yearFilter');
+  const countEl = document.getElementById('pubCount');
+  const emptyEl = document.getElementById('pubEmpty');
+  let activeYear = 'all';
+
+  const apply = () => {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const el of items) {
+      const matchYear = activeYear === 'all' || el.dataset.year === activeYear;
+      const matchText = !q || el.dataset.title.includes(q) || el.dataset.venue.includes(q);
+      const show = matchYear && matchText;
+      el.style.display = show ? '' : 'none';
+      if (show) shown++;
+    }
+    countEl.textContent = `Showing ${shown} publication${shown === 1 ? '' : 's'}` +
+      (activeYear !== 'all' ? ` from ${activeYear}` : '');
+    emptyEl.hidden = shown !== 0;
+  };
+
+  search.addEventListener('input', apply);
+  yearFilter.addEventListener('click', (e) => {
+    const btn = e.target.closest('.year-btn');
+    if (!btn) return;
+    activeYear = btn.dataset.year;
+    yearFilter.querySelectorAll('.year-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    apply();
+  });
+</script>

@@ -1,0 +1,36 @@
+---
+import { vacanciesIntro, vacancies } from '../data/vacancies.js';
+---
+
+<section class="section" id="join">
+  <div class="container">
+    <p class="eyebrow" data-reveal>// join us</p>
+    <h2 class="section-title" data-reveal>Work with us</h2>
+    <p class="section-lead" data-reveal data-delay="1">{vacanciesIntro}</p>
+
+    <div class="join-grid">
+      {vacancies.map((v, i) => (
+        <article class="join-card" data-reveal data-delay={(i % 3) + 1}>
+          <span class="join-num">0{i + 1}</span>
+          <h3 class="join-title">{v.title}</h3>
+          <p class="join-body" set:html={v.body} />
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .join-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 46px; }
+  .join-card { position: relative; border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 24px; background: var(--bg-panel); overflow: hidden; transition: border-color 0.3s ease, transform 0.3s ease; }
+  .join-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease); }
+  .join-card:hover { border-color: var(--line-strong); transform: translateY(-4px); }
+  .join-card:hover::before { transform: scaleX(1); }
+  .join-num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-soft); }
+  .join-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; color: #fff; margin: 12px 0 12px; }
+  .join-body { color: var(--ink-dim); font-size: 0.92rem; line-height: 1.65; }
+  .join-body :global(a) { color: var(--accent-soft); border-bottom: 1px solid rgba(255,90,134,0.35); }
+  .join-body :global(a:hover) { border-color: var(--accent-soft); }
+
+  @media (max-width: 880px) { .join-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site.js';
+
+const { title, description } = Astro.props;
+const pageTitle = title ?? `${site.name} · ${site.labName}`;
+const pageDesc =
+  description ??
+  `${site.name} — ${site.role}, ${site.institution}. ${site.tagline}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <meta name="author" content={site.fullName} />
+    <meta name="theme-color" content="#050506" />
+
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://hsgweon.github.io/" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content="https://hsgweon.github.io/" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <slot />
+
+    <!-- ── Global behaviour: scroll reveal + counters + active nav ── -->
+    <script>
+      // Reveal on scroll
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      );
+      document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+
+      // Animated number counters
+      const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+      const runCounter = (el) => {
+        const target = parseFloat(el.dataset.count || '0');
+        const dur = 1400;
+        const start = performance.now();
+        const step = (now) => {
+          const p = Math.min(1, (now - start) / dur);
+          const val = Math.floor(easeOut(p) * target);
+          el.textContent = val.toLocaleString();
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = target.toLocaleString();
+        };
+        requestAnimationFrame(step);
+      };
+      const counterIO = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            runCounter(e.target);
+            counterIO.unobserve(e.target);
+          }
+        }
+      }, { threshold: 0.6 });
+      document.querySelectorAll('[data-count]').forEach((el) => counterIO.observe(el));
+
+      // Active section highlight in the side nav
+      const navLinks = [...document.querySelectorAll('[data-nav]')];
+      const sections = navLinks
+        .map((l) => document.querySelector(l.getAttribute('href')))
+        .filter(Boolean);
+      const navIO = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            const id = '#' + e.target.id;
+            navLinks.forEach((l) =>
+              l.classList.toggle('active', l.getAttribute('href') === id)
+            );
+          }
+        }
+      }, { threshold: 0.4, rootMargin: '-20% 0px -40% 0px' });
+      sections.forEach((s) => navIO.observe(s));
+    </script>
+  </body>
+</html>

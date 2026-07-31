@@ -1,0 +1,66 @@
+---
+import { site } from '../data/site.js';
+
+const socials = [
+  { key: 'scholar', label: 'Google Scholar', url: site.links.scholar },
+  { key: 'github', label: 'GitHub', url: site.links.github },
+  { key: 'reading', label: 'Reading Profile', url: site.links.reading },
+  { key: 'linkedin', label: 'LinkedIn', url: site.links.linkedin },
+  { key: 'orcid', label: 'ORCID', url: site.links.orcid },
+  { key: 'twitter', label: 'Twitter / X', url: site.links.twitter },
+].filter((s) => s.url);
+---
+
+<section class="section" id="contact">
+  <div class="container">
+    <p class="eyebrow" data-reveal>// contact</p>
+    <h2 class="section-title" data-reveal>Get in touch</h2>
+
+    <div class="contact-grid">
+      <div class="contact-main" data-reveal data-delay="1">
+        <a href={`mailto:${site.email}`} class="email-big">
+          {site.emailDisplay}<span class="email-arrow"> ↗</span>
+        </a>
+        <p class="contact-loc">{site.location}</p>
+        <div class="socials">
+          {socials.map((s) => (
+            <a href={s.url} target="_blank" rel="noopener" class="social">{s.label} ↗</a>
+          ))}
+        </div>
+      </div>
+
+      <div class="contact-terminal" data-reveal data-delay="2" aria-hidden="true">
+        <div class="term-bar"><span></span><span></span><span></span></div>
+        <pre class="term-body"><span class="tprompt">gweon@lab</span>:<span class="tpath">~</span>$ whoami
+<span class="tout">{site.fullName}</span>
+<span class="tprompt">gweon@lab</span>:<span class="tpath">~</span>$ cat ./interests.txt
+<span class="tout">microbes · metagenomics · AMR · eDNA</span>
+<span class="tprompt">gweon@lab</span>:<span class="tpath">~</span>$ ./contact --now<span class="tcaret">▋</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 44px; align-items: center; }
+  .email-big { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 4vw, 2.3rem); color: #fff; letter-spacing: -0.02em; display: inline-block; transition: color 0.2s ease; }
+  .email-big:hover { color: var(--accent-soft); }
+  .email-arrow { color: var(--accent); }
+  .contact-loc { color: var(--ink-dim); margin: 20px 0 26px; max-width: 42ch; }
+  .socials { display: flex; flex-wrap: wrap; gap: 10px; }
+  .social { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 100px; padding: 9px 16px; transition: all 0.2s ease; }
+  .social:hover { border-color: var(--accent); color: #fff; box-shadow: 0 0 16px -6px var(--glow); transform: translateY(-2px); }
+
+  .contact-terminal { border: 1px solid var(--line-strong); border-radius: var(--radius); background: #08080a; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.8); }
+  .term-bar { display: flex; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--bg-soft); }
+  .term-bar span { width: 11px; height: 11px; border-radius: 50%; background: var(--ink-faint); }
+  .term-bar span:first-child { background: var(--accent); }
+  .term-body { font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.9; color: var(--ink-dim); padding: 20px 22px; white-space: pre-wrap; word-break: break-word; }
+  .tprompt { color: var(--accent-soft); }
+  .tpath { color: #6ab0ff; }
+  .tout { color: var(--ink); }
+  .tcaret { color: var(--accent); animation: blink 1.05s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  @media (max-width: 780px) { .contact-grid { grid-template-columns: 1fr; } }
+</style>

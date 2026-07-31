@@ -1,0 +1,58 @@
+---
+import { about } from '../data/about.js';
+import { site } from '../data/site.js';
+---
+
+<section class="section" id="about">
+  <div class="container about-grid">
+    <div class="about-media" data-reveal>
+      <div class="photo-frame">
+        <img src={about.photo} alt={site.name} loading="lazy" width="420" height="480" />
+        <div class="photo-tag"><span>{site.fullName}</span></div>
+      </div>
+    </div>
+
+    <div class="about-text">
+      <p class="eyebrow">// about</p>
+      <h2 class="section-title">Hi, I'm <span class="grad">Soon</span>.</h2>
+      {about.bio.map((para, i) => (
+        <p class="about-para" data-reveal data-delay={i + 1} set:html={para} />
+      ))}
+
+      <div class="about-facts" data-reveal data-delay="3">
+        {about.facts.map((f) => (
+          <div class="fact">
+            <span class="fact-label">{f.label}</span>
+            <span class="fact-detail">{f.detail}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-grid { display: grid; grid-template-columns: 340px 1fr; gap: clamp(30px, 6vw, 70px); align-items: start; }
+
+  .photo-frame { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-strong); }
+  .photo-frame::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, transparent 55%, rgba(203,41,87,0.35)); mix-blend-mode: screen; pointer-events: none; }
+  .photo-frame img { width: 100%; height: auto; filter: grayscale(0.35) contrast(1.03); transition: filter 0.5s ease; }
+  .photo-frame:hover img { filter: grayscale(0) contrast(1.05); }
+  .photo-tag { position: absolute; left: 12px; bottom: 12px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; color: var(--ink); background: rgba(5,5,6,0.7); backdrop-filter: blur(6px); border: 1px solid var(--line); padding: 5px 11px; border-radius: 100px; }
+
+  .about-para { color: var(--ink-dim); margin-bottom: 16px; }
+  .about-para :global(a) { color: var(--accent-soft); border-bottom: 1px solid rgba(255,90,134,0.35); transition: border-color 0.2s ease; }
+  .about-para :global(a:hover) { border-color: var(--accent-soft); }
+  .about-para :global(b) { color: var(--ink); font-weight: 600; }
+
+  .about-facts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .fact { border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; background: var(--bg-soft); transition: border-color 0.25s ease, transform 0.25s ease; }
+  .fact:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .fact-label { display: block; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-soft); letter-spacing: 0.02em; }
+  .fact-detail { display: block; font-size: 0.82rem; color: var(--ink-faint); margin-top: 2px; }
+
+  @media (max-width: 820px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .about-media { max-width: 300px; }
+  }
+</style>

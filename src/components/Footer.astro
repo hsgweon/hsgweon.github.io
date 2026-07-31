@@ -1,0 +1,30 @@
+---
+import { site } from '../data/site.js';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark">⌗</span>
+      <span>{site.labName}</span>
+    </div>
+    <p class="footer-note">
+      {site.name} · {site.institution}
+    </p>
+    <p class="footer-credit">
+      © {year} · Built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>. Publications auto-synced from Google Scholar.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: 1px solid var(--line); padding-block: 44px; }
+  .footer-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+  .footer-brand { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 1.1rem; }
+  .footer-brand .brand-mark { color: var(--accent); }
+  .footer-note { color: var(--ink-dim); font-size: 0.9rem; }
+  .footer-credit { color: var(--ink-faint); font-family: var(--font-mono); font-size: 0.74rem; }
+  .footer-credit a { color: var(--ink-dim); border-bottom: 1px solid var(--line-strong); }
+  .footer-credit a:hover { color: var(--accent-soft); }
+</style>

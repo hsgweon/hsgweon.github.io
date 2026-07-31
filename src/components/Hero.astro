@@ -1,0 +1,216 @@
+---
+import { site } from '../data/site.js';
+import pubData from '../data/publications.json';
+
+const m = pubData._meta;
+---
+
+<section class="hero" id="top">
+  <canvas class="helix" id="helixCanvas" aria-hidden="true"></canvas>
+
+  <div class="hero-inner container">
+    <p class="hero-eyebrow" data-reveal>
+      <span class="dot"></span>{site.institution}
+    </p>
+
+    <h1 class="hero-name" data-reveal data-delay="1">
+      {site.name}
+    </h1>
+
+    <p class="hero-role" data-reveal data-delay="2">{site.role}</p>
+
+    <p class="hero-typed" data-reveal data-delay="2">
+      <span class="mono-arrow">&gt;</span>
+      <span id="typed"></span><span class="caret">_</span>
+    </p>
+
+    <p class="hero-tagline" data-reveal data-delay="3">{site.tagline}</p>
+
+    <div class="hero-cta" data-reveal data-delay="3">
+      <a href="#research" class="btn btn-solid">Explore the research</a>
+      <a href={site.links.scholar} target="_blank" rel="noopener" class="btn">Google Scholar ↗</a>
+    </div>
+
+    <!-- Metrics -->
+    <div class="hero-stats" data-reveal data-delay="4">
+      <div class="stat">
+        <span class="stat-num" data-count={m.citations}>0</span>
+        <span class="stat-label">Citations</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count={m.hIndex}>0</span>
+        <span class="stat-label">h-index</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count={m.i10Index}>0</span>
+        <span class="stat-label">i10-index</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count={pubData.publications.length}>0</span>
+        <span class="stat-label">Publications</span>
+      </div>
+    </div>
+  </div>
+
+  <a href="#about" class="scroll-hint" aria-label="Scroll down">
+    <span></span>
+  </a>
+</section>
+
+<style>
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
+  .helix { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.9; }
+
+  .hero-inner { position: relative; z-index: 2; padding-top: 90px; padding-bottom: 60px; }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 26px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .hero-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.8rem, 9vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 18px;
+    text-shadow: 0 0 60px rgba(203,41,87,0.25);
+  }
+
+  .hero-role { font-size: clamp(1.05rem, 2.4vw, 1.45rem); color: var(--ink); font-weight: 500; margin-bottom: 20px; max-width: 40ch; }
+
+  .hero-typed {
+    font-family: var(--font-mono);
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    color: var(--accent-soft);
+    margin-bottom: 22px;
+    min-height: 1.6em;
+  }
+  .mono-arrow { color: var(--ink-faint); margin-right: 8px; }
+  .caret { animation: blink 1.05s step-end infinite; color: var(--accent); }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-tagline { color: var(--ink-dim); max-width: 46ch; font-size: 1.08rem; margin-bottom: 34px; }
+
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 54px; }
+
+  .hero-stats { display: grid; grid-template-columns: repeat(4, auto); gap: clamp(24px, 5vw, 60px); }
+  .stat { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 4.4vw, 2.8rem);
+    line-height: 1;
+    color: #fff;
+  }
+  .stat-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); margin-top: 8px; }
+
+  .scroll-hint { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 2; width: 26px; height: 42px; border: 2px solid var(--line-strong); border-radius: 20px; display: flex; justify-content: center; padding-top: 8px; }
+  .scroll-hint span { width: 4px; height: 8px; border-radius: 4px; background: var(--accent); animation: scrolldot 1.6s infinite; }
+  @keyframes scrolldot { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
+
+  @media (max-width: 560px) {
+    .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  }
+</style>
+
+<script define:vars={{ keywords: site.heroKeywords, bases: site.dnaBases }}>
+  /* ── Typewriter for the rotating keywords ── */
+  const el = document.getElementById('typed');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (el) {
+    if (reduce) {
+      el.textContent = keywords[0];
+    } else {
+      let wi = 0, ci = 0, deleting = false;
+      const tick = () => {
+        const word = keywords[wi];
+        el.textContent = word.slice(0, ci);
+        if (!deleting && ci < word.length) { ci++; setTimeout(tick, 70); }
+        else if (!deleting && ci === word.length) { deleting = true; setTimeout(tick, 1500); }
+        else if (deleting && ci > 0) { ci--; setTimeout(tick, 35); }
+        else { deleting = false; wi = (wi + 1) % keywords.length; setTimeout(tick, 250); }
+      };
+      tick();
+    }
+  }
+
+  /* ── Animated DNA double helix on canvas ── */
+  const canvas = document.getElementById('helixCanvas');
+  if (canvas && !reduce) {
+    const ctx = canvas.getContext('2d');
+    let w, h, dpr, t = 0, raf;
+    const baseLetters = bases.split('');
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // helix runs down the right side of the hero (out of the way of text)
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      const cx = w > 900 ? w * 0.80 : w * 0.5;
+      const amp = Math.min(w, 900) * 0.14;
+      const rungs = 42;
+      const span = h * 1.15;
+      const top = -h * 0.05;
+
+      for (let i = 0; i < rungs; i++) {
+        const p = i / rungs;
+        const y = top + p * span;
+        const phase = p * Math.PI * 4 + t;
+        const x1 = cx + Math.sin(phase) * amp;
+        const x2 = cx + Math.sin(phase + Math.PI) * amp;
+        const depth = (Math.cos(phase) + 1) / 2; // 0..1 front/back
+
+        // connecting rung
+        ctx.beginPath();
+        ctx.moveTo(x1, y); ctx.lineTo(x2, y);
+        ctx.strokeStyle = `rgba(203,41,87,${0.06 + depth * 0.14})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // two backbone nodes
+        for (const [x, front] of [[x1, Math.sin(phase) >= 0], [x2, Math.sin(phase) < 0]]) {
+          const r = 1.6 + depth * 2.6;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fillStyle = front
+            ? `rgba(255,90,134,${0.35 + depth * 0.5})`
+            : `rgba(203,41,87,${0.18 + depth * 0.35})`;
+          ctx.fill();
+        }
+
+        // occasional base letter
+        if (i % 3 === 0) {
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.fillStyle = `rgba(221,221,221,${0.10 + depth * 0.18})`;
+          ctx.fillText(baseLetters[i % baseLetters.length], (x1 + x2) / 2 - 3, y - 5);
+        }
+      }
+      t += 0.012;
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+
+    // pause when tab hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) cancelAnimationFrame(raf);
+      else draw();
+    });
+  }
+</script>

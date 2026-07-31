@@ -1,0 +1,54 @@
+---
+import { researchIntro, researchThemes } from '../data/research.js';
+---
+
+<section class="section" id="research">
+  <div class="container">
+    <p class="eyebrow" data-reveal>// research</p>
+    <h2 class="section-title" data-reveal>What we work on</h2>
+    <p class="section-lead" data-reveal data-delay="1">{researchIntro}</p>
+
+    <div class="bento">
+      {researchThemes.map((theme, i) => (
+        <article class="card" data-reveal data-delay={(i % 3) + 1}>
+          <div class="card-glow" aria-hidden="true"></div>
+          <span class="card-icon">{theme.icon}</span>
+          <h3 class="card-title">{theme.title}</h3>
+          <p class="card-blurb">{theme.blurb}</p>
+          <div class="card-tags">
+            {theme.tags.map((t) => <span class="pill">{t}</span>)}
+          </div>
+          <span class="card-index">0{i + 1}</span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 48px; }
+
+  .card {
+    position: relative;
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    border-radius: var(--radius);
+    padding: 26px 24px 24px;
+    overflow: hidden;
+    transition: border-color 0.35s var(--ease), transform 0.35s var(--ease);
+    min-height: 210px;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { border-color: rgba(203,41,87,0.6); transform: translateY(-4px); }
+  .card-glow { position: absolute; width: 240px; height: 240px; background: radial-gradient(circle, var(--glow), transparent 70%); top: -120px; right: -80px; opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+  .card:hover .card-glow { opacity: 0.5; }
+
+  .card-icon { font-size: 1.7rem; line-height: 1; margin-bottom: 16px; filter: saturate(1.1); }
+  .card-title { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; color: #fff; margin-bottom: 10px; letter-spacing: -0.01em; }
+  .card-blurb { color: var(--ink-dim); font-size: 0.92rem; line-height: 1.6; margin-bottom: 16px; flex: 1; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .card-index { position: absolute; top: 20px; right: 22px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-faint); }
+
+  @media (max-width: 880px) { .bento { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .bento { grid-template-columns: 1fr; } }
+</style>
